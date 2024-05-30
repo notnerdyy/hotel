@@ -1,10 +1,21 @@
 <?php
 require_once("../hotel_db_connect.php");
 
-$sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
-$resultAll = $conn->query($sqlAll);
-$allUserCount = $resultAll->num_rows;
+if (isset($_GET["search"])) {
+  $search = $_GET["search"];
+  $sql = "SELECT id, name, address, phone, description, category_id 
+            FROM hotel_list 
+            WHERE (description LIKE '%$search%' OR address LIKE '%$search%') AND valid = 1";
+  $result = $conn->query($sql);
+  $hotelCount = $result->num_rows;
+} else {
+  $sql = "SELECT id, name, address, phone, description, category_id 
+            FROM hotel_list WHERE valid = 1";
+  $result = $conn->query($sql);
+  $hotelCount = $result->num_rows;
+}
 
+$rows = $result->fetch_all(MYSQLI_ASSOC);
 ?>
 
 <?php include("../css.php") ?>
@@ -15,17 +26,28 @@ $allUserCount = $resultAll->num_rows;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>旅館列表</title>
-
 </head>
 
 <body>
 
   <div class="container">
+    <div class="py-2">
+      <div class="d-flex justify-content-end gap-3">
+        <form action="">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="search..." name="search">
+            <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="pb-2">
+      共 <?= $hotelCount ?> 間
+    </div>
     <div class="py-2 mb-3">
-      <?php if ($allUserCount > 0) : ?>
-        <table class="table table_bordered">
+      <?php if ($hotelCount > 0) : ?>
+        <table class="table table-bordered">
           <thead>
-
             <tr>
               <th>ID</th>
               <th>地區</th>
@@ -36,29 +58,21 @@ $allUserCount = $resultAll->num_rows;
             </tr>
           </thead>
           <tbody>
-            <?php while ($hotel_list = $resultAll->fetch_assoc()) : ?>
-
-              <td><?= $hotel_list["id"] ?></td>
-              <td><?= $hotel_list["category_id"] ?></td>
-              <td><?= $hotel_list["name"] ?></td>
-              <td><?= $hotel_list["description"] ?></td>
-              <td><?= $hotel_list["address"] ?></td>
-              <td><?= $hotel_list["phone"] ?></td>
-
+            <?php foreach ($rows as $hotel_list) : ?>
+              <tr>
+                <td><?= $hotel_list["id"] ?></td>
+                <td><?= $hotel_list["category_id"] ?></td>
+                <td><?= $hotel_list["name"] ?></td>
+                <td><?= $hotel_list["description"] ?></td>
+                <td><?= $hotel_list["address"] ?></td>
+                <td><?= $hotel_list["phone"] ?></td>
               </tr>
-            <?php endwhile; ?>
+            <?php endforeach; ?>
           </tbody>
         </table>
-
-
-
-
-        </nav>
-
       <?php else : ?>
         <p>沒有找到任何旅館。</p>
       <?php endif; ?>
-
     </div>
   </div>
 
