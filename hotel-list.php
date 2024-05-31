@@ -1,6 +1,8 @@
 <?php
 require_once("../hotel_db_connect.php");
 
+
+// 搜尋欄
 if (isset($_GET["search"])) {
   $search = $_GET["search"];
   $sql = "SELECT id, name, address, phone, description, category_id 
@@ -33,17 +35,27 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
   <div class="container">
     <div class="py-2">
       <div class="d-flex justify-content-end gap-3">
-        <form action="">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="search..." name="search">
-            <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-          </div>
-        </form>
+        <div>
+          <?php if (isset($_GET["search"])) : ?>
+            <a class="btn btn-outline-dark" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i></i></a>
+          <?php endif; ?>
+        </div>
       </div>
     </div>
+    <!-- 搜尋欄 -->
+    <div class="d-flex justify-content-end gap-3">
+      <form action="">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="search..." name="search">
+          <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+      </form>
+    </div>
+
     <div class="pb-2">
       共 <?= $hotelCount ?> 間
     </div>
+
     <div class="py-2 mb-3">
       <?php if ($hotelCount > 0) : ?>
         <table class="table table-bordered">
@@ -63,7 +75,7 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
                 <td><?= $hotel_list["id"] ?></td>
                 <td><?= $hotel_list["category_id"] ?></td>
                 <td><?= $hotel_list["name"] ?></td>
-                <td><?= $hotel_list["description"] ?></td>
+                <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
                 <td><?= $hotel_list["address"] ?></td>
                 <td><?= $hotel_list["phone"] ?></td>
               </tr>
