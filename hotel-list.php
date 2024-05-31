@@ -85,7 +85,7 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
                 <td><?= $hotel_list["phone"] ?></td>
 
                 <td>
-                  <a class="btn btn-outline-dark" href="hotel-edit.php?id<?= $row["id"] ?> " title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
+                  <a class="btn btn-outline-dark" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
                   <a class="btn btn-outline-warning" href=""><i class="fa-solid fa-trash"></i></a>
                 </td>
               </tr>
