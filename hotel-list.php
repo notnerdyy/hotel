@@ -5,17 +5,19 @@ require_once("../hotel_db_connect.php");
 // 搜尋欄
 if (isset($_GET["search"])) {
   $search = $_GET["search"];
-  $sql = "SELECT id, name, address, phone, description, category_id 
-            FROM hotel_list 
-            WHERE (description LIKE '%$search%' OR address LIKE '%$search%') AND valid = 1";
   $result = $conn->query($sql);
   $hotelCount = $result->num_rows;
 } else {
-  $sql = "SELECT id, name, address, phone, description, category_id 
-            FROM hotel_list WHERE valid = 1";
+  $sql = "SELECT hotel_list. *, room_category.room_type FROM hotel_list 
+  JOIN room_category ON hotel_list.room_type_id = room_category.id";
+
+
+
   $result = $conn->query($sql);
   $hotelCount = $result->num_rows;
 }
+
+
 
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 ?>
@@ -65,21 +67,25 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
               <th>地區</th>
               <th>旅館名稱</th>
               <th>介紹</th>
+              <th>房間類型</th>
               <th>詳細地址</th>
               <th>聯絡電話</th>
+
             </tr>
           </thead>
           <tbody>
             <?php foreach ($rows as $hotel_list) : ?>
               <tr>
                 <td><?= $hotel_list["id"] ?></td>
-                <td><?= $hotel_list["category_id"] ?></td>
+                <td><?= $hotel_list["location"] ?></td>
                 <td><?= $hotel_list["name"] ?></td>
                 <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
+                <td><?= $hotel_list["room_type"] ?></td>
                 <td><?= $hotel_list["address"] ?></td>
                 <td><?= $hotel_list["phone"] ?></td>
+
                 <td>
-                  <a class="btn btn-outline-dark" href=""><i class="fa-regular fa-pen-to-square"></i></a>
+                  <a class="btn btn-outline-dark" href="hotel-edit.php?id<?= $row["id"] ?> " title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
                   <a class="btn btn-outline-warning" href=""><i class="fa-solid fa-trash"></i></a>
                 </td>
               </tr>
@@ -87,7 +93,7 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
           </tbody>
         </table>
       <?php else : ?>
-        <p>沒有找到任何旅館。</p>
+        <p>沒有找到任何狗狗旅館。</p>
       <?php endif; ?>
     </div>
   </div>
