@@ -65,7 +65,7 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
               <th>地區</th>
               <th>旅館名稱</th>
               <th>介紹</th>
-              <th>地址</th>
+              <th>詳細地址</th>
               <th>聯絡電話</th>
             </tr>
           </thead>
@@ -78,6 +78,10 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
                 <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
                 <td><?= $hotel_list["address"] ?></td>
                 <td><?= $hotel_list["phone"] ?></td>
+                <td>
+                  <a class="btn btn-outline-dark" href=""><i class="fa-regular fa-pen-to-square"></i></a>
+                  <a class="btn btn-outline-warning" href=""><i class="fa-solid fa-trash"></i></a>
+                </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
