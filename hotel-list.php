@@ -1,26 +1,43 @@
 <?php
 require_once("../hotel_db_connect.php");
 
+$sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
+$resultAll = $conn->query($sqlAll);
+$allHotelCount = $resultAll->num_rows;
+
+// 每頁顯示筆數
+$perPage = 5;
+
+// 如無資訊則抓第一頁
+$page = isset($_GET["page"]) ? $_GET["page"] : 1;
+$firstItem = ($page - 1) * $perPage;
+
+
+$sqlAll = "SELECT hotel_list.*, room_category.room_type FROM hotel_list 
+           JOIN room_category ON hotel_list.room_type_id = room_category.id 
+           WHERE hotel_list.valid = 1";
 
 // 搜尋欄
 if (isset($_GET["search"])) {
   $search = $_GET["search"];
-  $result = $conn->query($sql);
-  $hotelCount = $result->num_rows;
+  $sql = $sqlAll . " AND (hotel_list.name LIKE '%$search%' OR hotel_list.description LIKE '%$search%')";
 } else {
-  $sql = "SELECT hotel_list. *, room_category.room_type FROM hotel_list 
-  JOIN room_category ON hotel_list.room_type_id = room_category.id";
+  $sql = $sqlAll;
+}
 
+// 加入分頁
+$sql .= " LIMIT $firstItem, $perPage";
+$result = $conn->query($sql);
+$hotelCount = $result->num_rows;
+$rows = $result->fetch_all(MYSQLI_ASSOC);
 
-
-  $result = $conn->query($sql);
-  $hotelCount = $result->num_rows;
+if ($_GET["page"]) {
+  $hotelCount = $allHotelCount;
 }
 
 
-
-$rows = $result->fetch_all(MYSQLI_ASSOC);
 ?>
+
 
 <?php include("../css.php") ?>
 <!DOCTYPE html>
@@ -33,9 +50,38 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
 </head>
 
 <body>
-
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">刪除</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          是否確認刪除旅館資料?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          <a href="#" id="confirmDeleteBtn" class="btn btn-danger">確認</a>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="container">
     <div class="py-2">
+
+
+      <!-- 搜尋欄 -->
+      <div class="d-flex justify-content-end gap-3">
+        <form action="">
+          <div class="input-group">
+            <input type="text" class="form-control" placeholder="search..." name="search">
+            <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+          </div>
+        </form>
+      </div>
+      <!-- 返回箭頭 -->
       <div class="d-flex justify-content-end gap-3">
         <div>
           <?php if (isset($_GET["search"])) : ?>
@@ -44,18 +90,10 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
         </div>
       </div>
     </div>
-    <!-- 搜尋欄 -->
-    <div class="d-flex justify-content-end gap-3">
-      <form action="">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="search..." name="search">
-          <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
-      </form>
-    </div>
 
     <div class="pb-2">
       共 <?= $hotelCount ?> 間
+
     </div>
 
     <div class="py-2 mb-3">
@@ -86,18 +124,50 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
 
                 <td>
                   <a class="btn btn-outline-dark" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
-                  <a class="btn btn-outline-warning" href=""><i class="fa-solid fa-trash"></i></a>
+                  <button class="btn btn-outline-warning delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
             <?php endforeach; ?>
           </tbody>
         </table>
-      <?php else : ?>
-        <p>沒有找到任何狗狗旅館。</p>
-      <?php endif; ?>
+        <!-- 分頁鍵 -->
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+            <li class="page-item"><a class="page-link" href="?page=2">2</a></li>
+            <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
+            <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
+            <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
+
+          </ul>
+        </nav>
+
+
+
     </div>
   </div>
 
+
+<?php else : ?>
+  <p>沒有找到任何狗狗旅館。</p>
+<?php endif; ?>
+
+
+<!-- 確認刪除旅館資料 -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteBtns = document.querySelectorAll('.delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    deleteBtns.forEach(button => {
+      button.addEventListener('click', function() {
+        const hotelId = this.getAttribute('data-id');
+        confirmDeleteBtn.setAttribute('href', 'hotel-delete.php?id=' + hotelId);
+      });
+    });
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
