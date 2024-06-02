@@ -5,8 +5,10 @@ $sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
 $resultAll = $conn->query($sqlAll);
 $allHotelCount = $resultAll->num_rows;
 
+
+
 // 每頁顯示筆數
-$perPage = 5;
+$perPage = 4;
 
 // 如無資訊則抓第一頁
 $page = isset($_GET["page"]) ? $_GET["page"] : 1;
@@ -36,6 +38,7 @@ if ($_GET["page"]) {
 }
 
 
+
 ?>
 
 
@@ -47,6 +50,7 @@ if ($_GET["page"]) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>旅館列表</title>
+
 </head>
 
 <body>
@@ -102,9 +106,9 @@ if ($_GET["page"]) {
           <thead>
             <tr>
               <th>ID</th>
-              <th>地區</th>
               <th>旅館名稱</th>
               <th>介紹</th>
+              <th>圖片</th>
               <th>房間類型</th>
               <th>詳細地址</th>
               <th>聯絡電話</th>
@@ -115,9 +119,19 @@ if ($_GET["page"]) {
             <?php foreach ($rows as $hotel_list) : ?>
               <tr>
                 <td><?= $hotel_list["id"] ?></td>
-                <td><?= $hotel_list["location"] ?></td>
                 <td><?= $hotel_list["name"] ?></td>
                 <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
+                <td>
+                  <?php
+                  $imageUrls = json_decode($hotel_list['images'], true);
+                  if (!empty($imageUrls)) {
+                    foreach ($imageUrls as $imageUrl) {
+                      echo '<img src="' . $imageUrl . '" alt="Hotel Image" class="hotel-image">';
+                    }
+                  } else {
+                    echo "找不到此旅館照片";
+                  }
+                  ?></td>
                 <td><?= $hotel_list["room_type"] ?></td>
                 <td><?= $hotel_list["address"] ?></td>
                 <td><?= $hotel_list["phone"] ?></td>
@@ -127,6 +141,7 @@ if ($_GET["page"]) {
                   <button class="btn btn-outline-warning delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
                 </td>
               </tr>
+
             <?php endforeach; ?>
           </tbody>
         </table>
@@ -138,7 +153,7 @@ if ($_GET["page"]) {
             <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
             <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
             <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
-
+            <li class="page-item"><a class="page-link" href="?page=6">6</a></li>
           </ul>
         </nav>
 
