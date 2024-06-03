@@ -15,9 +15,18 @@ $page = isset($_GET["page"]) ? $_GET["page"] : 1;
 $firstItem = ($page - 1) * $perPage;
 
 
-$sqlAll = "SELECT hotel_list.*, room_category.room_type FROM hotel_list 
+$sqlAll = "SELECT hotel_list.*, room_category.room_type, hotel_img.path 
+           FROM hotel_list 
            JOIN room_category ON hotel_list.room_type_id = room_category.id 
+           LEFT JOIN (
+              SELECT hotel_img.hotel_id, MIN(hotel_img.path) as path
+              FROM hotel_img
+              WHERE hotel_img.valid = 1
+              GROUP BY hotel_img.hotel_id
+           ) as hotel_img ON hotel_list.id = hotel_img.hotel_id
            WHERE hotel_list.valid = 1";
+
+
 
 // 搜尋欄
 if (isset($_GET["search"])) {
@@ -36,6 +45,16 @@ $rows = $result->fetch_all(MYSQLI_ASSOC);
 if ($_GET["page"]) {
   $hotelCount = $allHotelCount;
 }
+
+//分頁數
+$totalItems = 25;
+$itemsPerPage = 4;
+$totalPages = ceil($totalItems / $itemsPerPage);
+
+$currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+$currentPage = max(1, min($totalPages, $currentPage));
+
 
 
 
@@ -95,7 +114,10 @@ if ($_GET["page"]) {
           </form>
         </div>
       </div>
-
+      <!-- 新增 -->
+      <div class="d-flex justify-content-end">
+        <a class="btn btn-success" href="add-hotel.php">新增旅館</a>
+      </div>
 
       <div class="pb-2">
         共 <?= $hotelCount ?> 間
@@ -125,13 +147,11 @@ if ($_GET["page"]) {
                   <td><?= $hotel_list["name"] ?></td>
                   <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
                   <td>
-                    <?php
-                    $imageUrls = json_decode($hotel_list['images'], true);
-                    if (!empty($imageUrls)) {
-                      $firstImageUrl = $imageUrls[0];
-                      echo '<img src="' . $firstImageUrl . '" alt="Hotel Image" class="hotel-image">';
-                    }
-                    ?>
+                    <?php if (!empty($hotel_list["path"])) : ?>
+                      <img src="../hotels_img/<?= $hotel_list["path"] ?>" class="hotel-image" alt="<?= $hotel_list["name"] ?>">
+                    <?php else : ?>
+                      沒有圖片
+                    <?php endif; ?>
                   </td>
                   <td><?= $hotel_list["room_type"] ?></td>
                   <td><?= $hotel_list["address"] ?></td>
@@ -149,12 +169,11 @@ if ($_GET["page"]) {
           <!-- 分頁鍵 -->
           <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
-              <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
-              <li class="page-item"><a class="page-link" href="?page=2">2</a></li>
-              <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
-              <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
-              <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
-              <li class="page-item"><a class="page-link" href="?page=6">6</a></li>
+              <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                  <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                </li>
+              <?php endfor; ?>
             </ul>
           </nav>
 
