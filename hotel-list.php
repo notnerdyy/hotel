@@ -76,113 +76,114 @@ if ($_GET["page"]) {
     <div class="py-2">
 
 
-      <!-- 搜尋欄 -->
-      <div class="d-flex justify-content-end gap-3">
-        <form action="">
-          <div class="input-group">
-            <input type="text" class="form-control" placeholder="search..." name="search">
-            <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
-          </div>
-        </form>
-      </div>
-      <!-- 返回箭頭 -->
-      <div class="d-flex justify-content-end gap-3">
-        <div>
+
+      <div class="d-flex justify-content-between gap-3">
+        <!-- 返回箭頭 -->
+        <div class="d-flex align-items-center">
           <?php if (isset($_GET["search"])) : ?>
-            <a class="btn btn-outline-dark" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i></i></a>
+            <a class="btn btn-outline-dark" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i></a>
           <?php endif; ?>
         </div>
+
+        <!-- 搜尋欄 -->
+        <div class="d-flex">
+          <form action="" class="d-flex">
+            <div class="input-group">
+              <input type="text" class="form-control" placeholder="search..." name="search">
+              <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+      <div class="pb-2">
+        共 <?= $hotelCount ?> 間
+
+      </div>
+
+      <div class="py-2 mb-3">
+        <?php if ($hotelCount > 0) : ?>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>旅館名稱</th>
+                <th>介紹</th>
+                <th>圖片</th>
+                <th>房間類型</th>
+                <th>詳細地址</th>
+                <th>聯絡電話</th>
+                <th></th>
+
+              </tr>
+            </thead>
+            <tbody>
+              <?php foreach ($rows as $hotel_list) : ?>
+                <tr>
+                  <td><?= $hotel_list["id"] ?></td>
+                  <td><?= $hotel_list["name"] ?></td>
+                  <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
+                  <td>
+                    <?php
+                    $imageUrls = json_decode($hotel_list['images'], true);
+                    if (!empty($imageUrls)) {
+                      $firstImageUrl = $imageUrls[0];
+                      echo '<img src="' . $firstImageUrl . '" alt="Hotel Image" class="hotel-image">';
+                    }
+                    ?>
+                  </td>
+                  <td><?= $hotel_list["room_type"] ?></td>
+                  <td><?= $hotel_list["address"] ?></td>
+                  <td><?= $hotel_list["phone"] ?></td>
+
+                  <td>
+                    <a class="btn btn-outline-dark" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
+                    <button class="btn btn-outline-warning delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
+                  </td>
+                </tr>
+
+              <?php endforeach; ?>
+            </tbody>
+          </table>
+          <!-- 分頁鍵 -->
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+              <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
+              <li class="page-item"><a class="page-link" href="?page=2">2</a></li>
+              <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
+              <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
+              <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
+              <li class="page-item"><a class="page-link" href="?page=6">6</a></li>
+            </ul>
+          </nav>
+
+
+
       </div>
     </div>
 
-    <div class="pb-2">
-      共 <?= $hotelCount ?> 間
 
-    </div>
-
-    <div class="py-2 mb-3">
-      <?php if ($hotelCount > 0) : ?>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>旅館名稱</th>
-              <th>介紹</th>
-              <th>圖片</th>
-              <th>房間類型</th>
-              <th>詳細地址</th>
-              <th>聯絡電話</th>
-
-            </tr>
-          </thead>
-          <tbody>
-            <?php foreach ($rows as $hotel_list) : ?>
-              <tr>
-                <td><?= $hotel_list["id"] ?></td>
-                <td><?= $hotel_list["name"] ?></td>
-                <td class="<?= isset($_GET["search"]) ? '' : 'ellipsis' ?>"><?= $hotel_list["description"] ?></td>
-                <td>
-                  <?php
-                  $imageUrls = json_decode($hotel_list['images'], true);
-                  if (!empty($imageUrls)) {
-                    foreach ($imageUrls as $imageUrl) {
-                      echo '<img src="' . $imageUrl . '" alt="Hotel Image" class="hotel-image">';
-                    }
-                  } else {
-                    echo "找不到此旅館照片";
-                  }
-                  ?></td>
-                <td><?= $hotel_list["room_type"] ?></td>
-                <td><?= $hotel_list["address"] ?></td>
-                <td><?= $hotel_list["phone"] ?></td>
-
-                <td>
-                  <a class="btn btn-outline-dark" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
-                  <button class="btn btn-outline-warning delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
-                </td>
-              </tr>
-
-            <?php endforeach; ?>
-          </tbody>
-        </table>
-        <!-- 分頁鍵 -->
-        <nav aria-label="Page navigation example">
-          <ul class="pagination justify-content-center">
-            <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
-            <li class="page-item"><a class="page-link" href="?page=2">2</a></li>
-            <li class="page-item"><a class="page-link" href="?page=3">3</a></li>
-            <li class="page-item"><a class="page-link" href="?page=4">4</a></li>
-            <li class="page-item"><a class="page-link" href="?page=5">5</a></li>
-            <li class="page-item"><a class="page-link" href="?page=6">6</a></li>
-          </ul>
-        </nav>
+  <?php else : ?>
+    <p>沒有找到任何狗狗旅館。</p>
+  <?php endif; ?>
 
 
+  <!-- 確認刪除旅館資料 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const deleteBtns = document.querySelectorAll('.delete-btn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
-    </div>
-  </div>
-
-
-<?php else : ?>
-  <p>沒有找到任何狗狗旅館。</p>
-<?php endif; ?>
-
-
-<!-- 確認刪除旅館資料 -->
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const deleteBtns = document.querySelectorAll('.delete-btn');
-    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-
-    deleteBtns.forEach(button => {
-      button.addEventListener('click', function() {
-        const hotelId = this.getAttribute('data-id');
-        confirmDeleteBtn.setAttribute('href', 'hotel-delete.php?id=' + hotelId);
+      deleteBtns.forEach(button => {
+        button.addEventListener('click', function() {
+          const hotelId = this.getAttribute('data-id');
+          confirmDeleteBtn.setAttribute('href', 'hotel-delete.php?id=' + hotelId);
+        });
       });
     });
-  });
-</script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 
 </html>
