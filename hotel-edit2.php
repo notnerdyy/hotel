@@ -15,8 +15,34 @@ $sql = "SELECT hotel_list.*, room_category.room_type, area_category.location FRO
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
 
+
+//缺少編輯圖片
+
+// 房型下拉選單
+$sql = "SELECT id, room_type FROM room_category";
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+  $room_types = $result->fetch_all(MYSQLI_ASSOC);
+} else {
+  $room_types = [];
+}
+
+// 地區下拉選單
+$sql2 = "SELECT id, location FROM area_category";
+$result2 = $conn->query($sql2);
+
+if ($result2->num_rows > 0) {
+  $locations = $result2->fetch_all(MYSQLI_ASSOC);
+} else {
+  $locations = [];
+}
+
+$conn->close();
+
 ?>
 
+<!-- 缺編輯圖片 -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,9 +71,13 @@ $row = $result->fetch_assoc();
         </tr>
         <tr>
           <th>地區</th>
-          <td><select class="form-control" id="location" name="location">
-
-            </select></td>
+          <td>
+            <select class="form-select" id="location" name="location" aria-label="市/區">
+              <?php foreach ($locations as $location) : ?>
+                <option value="<?= $location['id'] ?>"><?= $location['location'] ?></option>
+              <?php endforeach; ?>
+            </select>
+          </td>
         </tr>
         <tr>
           <th>旅館名稱</th>
@@ -73,7 +103,11 @@ $row = $result->fetch_assoc();
         </tr>
         <tr>
           <th>房間類型</th>
-          <td><?= $row["room_type"] ?></td>
+          <td><select class="form-select" id="room_type" name="room_type" aria-label="房間類型">
+              <?php foreach ($room_types as $room_type) : ?>
+                <option value="<?= $room_type['id'] ?>"><?= $room_type['room_type'] ?></option>
+              <?php endforeach; ?>
+            </select></td>
         </tr>
         <tr>
           <th>詳細地址</th>
