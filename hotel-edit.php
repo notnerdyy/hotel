@@ -12,8 +12,18 @@ $sql = "SELECT hotel_list.*, room_category.room_type, area_category.location FRO
         JOIN room_category ON hotel_list.room_type_id = room_category.id
         JOIN area_category ON hotel_list.location_id = area_category.id
         WHERE hotel_list.id = $id AND hotel_list.valid = 1";
+
+
 $result = $conn->query($sql);
 $row = $result->fetch_assoc();
+
+
+// 圖片區
+$sqlImg = "SELECT path FROM hotel_img WHERE hotel_id = $id AND valid = 1";
+$resultImg = $conn->query($sqlImg);
+$images = $resultImg->fetch_all(MYSQLI_ASSOC);
+
+
 
 ?>
 
@@ -57,16 +67,10 @@ $row = $result->fetch_assoc();
         <tr>
           <th>圖片</th>
           <td>
-            <?php
-            $imageUrls = json_decode($row['images'], true);
-            if (!empty($imageUrls)) {
-              foreach ($imageUrls as $imageUrl) {
-                echo '<img src="' . $imageUrl . '" alt="Hotel Image" class="hotel-image">';
-              }
-            } else {
-              echo "找不到此旅館照片";
-            }
-            ?></td>
+            <?php foreach ($images as $image) : ?>
+              <img src="../hotels_img/<?= $image["path"] ?>" class="hotel-image" alt="<?= $row["name"] ?>">
+            <?php endforeach; ?>
+          </td>
         </tr>
         <tr>
           <th>房間類型</th>
@@ -86,8 +90,7 @@ $row = $result->fetch_assoc();
 
   <div class="row px-5">
     <div class="col-lg-4">
-      <a class="btn btn-outline-dark" href="hotel-edit2.php">編輯</a>
-      <button class="btn btn-dark" type="submit">送出</button>
+      <a class="btn btn-outline-dark" href="hotel-edit2.php?id=<?= $id ?>">編輯</a>
 
     </div>
   </div>

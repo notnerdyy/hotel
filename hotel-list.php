@@ -31,7 +31,7 @@ $sqlAll = "SELECT hotel_list.*, room_category.room_type, hotel_img.path
 // 搜尋欄
 if (isset($_GET["search"])) {
   $search = $_GET["search"];
-  $sql = $sqlAll . " AND (hotel_list.name LIKE '%$search%' OR hotel_list.description LIKE '%$search%')";
+  $sql = $sqlAll . " AND (hotel_list.name LIKE '%$search%' OR hotel_list.description LIKE '%$search%' OR room_category.room_type LIKE '%$search%' )";
 } else {
   $sql = $sqlAll;
 }
@@ -42,12 +42,14 @@ $result = $conn->query($sql);
 $hotelCount = $result->num_rows;
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 
-if ($_GET["page"]) {
+if (isset($_GET["page"])) {
   $hotelCount = $allHotelCount;
 }
 
+$isSearch = isset($_GET["search"]);
+
 //分頁數
-$totalItems = 25;
+$totalItems = 24;
 $itemsPerPage = 4;
 $totalPages = ceil($totalItems / $itemsPerPage);
 
@@ -56,6 +58,11 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $currentPage = max(1, min($totalPages, $currentPage));
 
 
+//房型篩選
+
+$sqlRoom = "SELECT * FROM room_category ORDER BY id ASC";
+$resultCate = $conn->query($sqlRoom);
+$cateRows = $resultCate->fetch_all(MYSQLI_ASSOC);
 
 
 ?>
@@ -71,6 +78,13 @@ $currentPage = max(1, min($totalPages, $currentPage));
   <title>旅館列表</title>
 
 </head>
+<style>
+  .hotel-image {
+    height: 70px;
+    width: 80px;
+
+  }
+</style>
 
 <body>
   <!-- Modal -->
@@ -100,7 +114,7 @@ $currentPage = max(1, min($totalPages, $currentPage));
         <!-- 返回箭頭 -->
         <div class="d-flex align-items-center">
           <?php if (isset($_GET["search"])) : ?>
-            <a class="btn btn-outline-dark" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i></a>
+            <a class="btn btn-outline-dark" href="hotel-list.php?page=1"><i class="fa-solid fa-arrow-left"></i></a>
           <?php endif; ?>
         </div>
 
@@ -114,10 +128,27 @@ $currentPage = max(1, min($totalPages, $currentPage));
           </form>
         </div>
       </div>
-      <!-- 新增 -->
-      <div class="d-flex justify-content-end">
+
+      <div class="d-flex justify-content-between py-3">
+        <!-- 房型分類 -->
+        <ul class="nav nav-pills">
+          <li class="nav-item">
+            <a class="nav-link <?= !isset($_GET["room_type"]) ? 'active' : '' ?>" href="hotel-list.php?page=1">全部</a>
+          </li>
+          <?php foreach ($cateRows as $roomCategory) : ?>
+            <li class="nav-item">
+              <a class="nav-link <?= (isset($_GET["room_type"]) && $_GET["room_type"] == $roomCategory["id"]) ? 'active' : '' ?>" href="hotel-list.php?room_type=<?= $roomCategory["id"] ?>"><?= $roomCategory["room_type"] ?></a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+
+
+        <!-- 新增 -->
         <a class="btn btn-success" href="add-hotel.php">新增旅館</a>
+
       </div>
+
+
 
       <div class="pb-2">
         共 <?= $hotelCount ?> 間
@@ -128,7 +159,7 @@ $currentPage = max(1, min($totalPages, $currentPage));
         <?php if ($hotelCount > 0) : ?>
           <table class="table table-bordered">
             <thead>
-              <tr>
+              <tr class="text-nowrap">
                 <th>ID</th>
                 <th>旅館名稱</th>
                 <th>介紹</th>
@@ -166,16 +197,19 @@ $currentPage = max(1, min($totalPages, $currentPage));
               <?php endforeach; ?>
             </tbody>
           </table>
-          <!-- 分頁鍵 -->
-          <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-              <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
-                <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                  <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
-                </li>
-              <?php endfor; ?>
-            </ul>
-          </nav>
+          <?php if (!$isSearch) : ?>
+            <!-- 分頁鍵 -->
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                <?php for ($i = 1; $i <= $totalPages; $i++) : ?>
+                  <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
+                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                  </li>
+                <?php endfor; ?>
+              </ul>
+            </nav>
+          <?php endif; ?>
+
 
 
 

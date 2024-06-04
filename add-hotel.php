@@ -32,7 +32,7 @@ $conn->close();
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>creat-user</title>
+  <title> 新增旅館</title>
 
   <style>
     .form-group textarea {
@@ -47,8 +47,8 @@ $conn->close();
     }
 
     .image-preview img {
-      width: 100px;
-      height: 100px;
+      width: 200px;
+      height: 200px;
     }
   </style>
 
@@ -111,7 +111,7 @@ $conn->close();
         <input type="text" class="form-control" id="phone" name="phone" required>
       </div>
 
-      <button type="submit" class="btn btn-dark">新增旅館</button>
+      <button type="submit" class="btn btn-dark">確定</button>
     </form>
   </div>
 
