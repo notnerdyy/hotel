@@ -82,6 +82,7 @@ if (isset($_GET["category"])) {
           JOIN room_category ON hotel_list.room_type_id = room_category.id
           ORDER BY hotel_list.id ASC";
 }
+$category_id = isset($_GET["category"]) ? $_GET["category"] : '';
 
 ?>
 
@@ -154,17 +155,17 @@ if (isset($_GET["category"])) {
             <a class="nav-link <?= !isset($_GET["category"]) ? 'active' : '' ?>" href="hotel-list.php?page=1">全部</a>
           </li>
 
-
           <li class="nav-item">
-            <a class="nav-link" href="hotel-list.php?category=1<?= $category["id"] ?>&search=迷你犬"><?= $category["room_type"] ?>迷你犬</a>
-          </li>
-          <a class="nav-link" href="hotel-list.php?category=2<?= $category["id"] ?>&search=小型犬"><?= $category["room_type"] ?>小型犬</a>
+            <a class="nav-link <?= $category_id == '1' ? 'active' : '' ?>" href="hotel-list.php?category=1&search=迷你犬">迷你犬</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="hotel-list.php?category=3<?= $category["id"] ?>&search=中型犬"><?= $category["room_type"] ?>中型犬</a>
+            <a class="nav-link <?= $category_id == '2' ? 'active' : '' ?>" href="hotel-list.php?category=2&search=小型犬">小型犬</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="hotel-list.php?category=4<?= $category["id"] ?>&search=大型犬"><?= $category["room_type"] ?>大型犬</a>
+            <a class="nav-link <?= $category_id == '3' ? 'active' : '' ?>" href="hotel-list.php?category=3&search=中型犬">中型犬</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link <?= $category_id == '4' ? 'active' : '' ?>" href="hotel-list.php?category=4&search=大型犬">大型犬</a>
           </li>
 
         </ul>
