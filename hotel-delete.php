@@ -1,5 +1,5 @@
 <?php
-require_once("../hotel_db_connect.php");
+require_once("../db_connect.php");
 
 if (!isset($_GET["id"])) {
   echo "請依循正常管道進入";

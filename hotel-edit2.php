@@ -6,7 +6,7 @@ if (!isset($_GET["id"])) {
   $id = $_GET["id"];
 }
 
-require_once("../hotel_db_connect.php");
+require_once("../db_connect.php");
 
 $sql = "SELECT hotel_list.*, room_category.room_type, area_category.location FROM hotel_list 
         JOIN room_category ON hotel_list.room_type_id = room_category.id

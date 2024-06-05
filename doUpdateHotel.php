@@ -1,5 +1,5 @@
 <?php
-require_once("../hotel_db_connect.php");
+require_once("../db_connect.php");
 
 if (!isset($_POST["name"]) || !isset($_POST["id"]) || !isset($_POST["description"]) || !isset($_POST["address"]) || !isset($_POST["phone"]) || !isset($_POST["room_type"]) || !isset($_POST["location"])) {
   echo "請依循正常管道進入此頁";

@@ -1,5 +1,5 @@
 <?php
-require_once("../hotel_db_connect.php");
+require_once("../db_connect.php");
 
 $sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
 $resultAll = $conn->query($sqlAll);

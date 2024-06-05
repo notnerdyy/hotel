@@ -1,5 +1,5 @@
 <?php
-require_once("../hotel_db_connect.php");
+require_once("../db_connect.php");
 
 // 房型下拉選單
 $sql = "SELECT id, room_type FROM room_category";
