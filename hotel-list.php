@@ -142,7 +142,7 @@ $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
           <form action="" class="d-flex">
             <div class="input-group">
               <input type="text" class="form-control" placeholder="search..." name="search">
-              <button class="btn btn-dark" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+              <button class="btn btn-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
           </form>
         </div>
@@ -218,8 +218,8 @@ $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
                   <td><?= $hotel_list["phone"] ?></td>
 
                   <td>
-                    <a class="btn btn-outline-dark" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
-                    <button class="btn btn-outline-warning delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
+                    <a class="btn btn-primary" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
+                    <button class="btn btn-danger delete-btn" title="刪除狗狗旅館" data-id="<?= $hotel_list["id"] ?>" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fa-solid fa-trash"></i></button>
                   </td>
                 </tr>
 
