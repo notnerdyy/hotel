@@ -41,6 +41,28 @@ if ($conn->query($sql) === TRUE) {
   echo "錯誤: " . $sql . "<br>" . $conn->error;
 }
 
+//儲存圖片嘗試
+
+// 插入 hotel_img 資料並移動圖片
+$upload_dir = "../hotels_img/";
+foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
+  $file_name = $_FILES["images"]["name"][$key];
+  $file_tmp = $_FILES["images"]["tmp_name"][$key];
+  $file_path = $upload_dir . basename($file_name);
+
+  if (move_uploaded_file($file_tmp, $file_path)) {
+    $sql_img = "INSERT INTO hotel_img (hotel_id, path, valid) VALUES ('$hotel_id', '$file_path', 1)";
+    if ($conn->query($sql_img) !== TRUE) {
+      echo "錯誤: " . $sql_img . "<br>" . $conn->error;
+    }
+  } else {
+    echo "圖片上傳失敗: " . $file_name . "<br>";
+  }
+}
+
+
+
+
 header("location: hotel-list.php?");
 
 $conn->close();

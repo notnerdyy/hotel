@@ -56,12 +56,13 @@ $conn->close();
 </head>
 
 <body>
+
   <div class="container">
     <div class="py-2">
       <a class="btn btn-dark" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i> 回狗狗旅館列表</a>
     </div>
 
-    <form action="doAddHotel.php" method="post">
+    <form action="doAddHotel.php" method="post" enctype="multipart/form-data">
 
       <div class="form-group mb-3">
         <label for="name">旅館名稱</label>
