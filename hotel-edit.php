@@ -36,6 +36,23 @@ $images = $resultImg->fetch_all(MYSQLI_ASSOC);
   <title><?= $row["name"] ?></title>
   <?php include("../css.php") ?>
 
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .table th {
+      white-space: nowrap;
+    }
+
+    .form-group {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  </style>
+
 </head>
 
 <body>
@@ -88,12 +105,12 @@ $images = $resultImg->fetch_all(MYSQLI_ASSOC);
     </form>
   </div>
 
-  <div class="row px-5">
-    <div class="col-lg-4">
-      <a class="btn btn-outline-dark" href="hotel-edit2.php?id=<?= $id ?>">編輯</a>
 
-    </div>
+  <div class="form-group  d-flex justify-content-end">
+    <a class="btn btn-outline-dark" href="hotel-edit2.php?id=<?= $id ?>">編輯</a>
+
   </div>
+
 
 </body>
 

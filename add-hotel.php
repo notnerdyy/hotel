@@ -35,9 +35,31 @@ $conn->close();
   <title> 新增旅館</title>
 
   <style>
-    .form-group textarea {
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .form-floating {
+
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-control textarea {
       resize: none;
       height: 200px;
+
+    }
+
+    .form-group {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .form-group label {
+      font-weight: bold;
     }
 
     .image-preview {
@@ -65,25 +87,26 @@ $conn->close();
     <form action="doAddHotel.php" method="post" enctype="multipart/form-data">
 
       <div class="form-group mb-3">
-        <label for="name">旅館名稱</label>
+        <label class="py-2" for="name">旅館名稱</label>
         <input type="text" class="form-control" id="name" name="name" required>
       </div>
 
+
       <div class="form-floating pb-3">
         <textarea class="form-control" placeholder="Leave a comment here" id="description" name="description" style="height: 100px"></textarea>
-        <label for="description">旅館介紹</label>
+        <label class="py-2" for="description">介紹</label>
       </div>
 
       <div class="form-group mb-3 pb-3">
-        <label for="images">圖片</label>
+        <label class="py-2" for="images">圖片</label>
         <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*" onchange="previewImages()">
 
-        <label for="images">預覽圖片</label>
+        <label class="py-2" for="images">預覽圖片</label>
         <div class="image-preview" id="imagePreview"></div>
       </div>
 
       <div class="form-group mb-3">
-        <label for="room_type">房間類型</label>
+        <label class="py-2" for="room_type">房間類型</label>
         <select class="form-select" id="room_type" name="room_type" aria-label="房間類型">
           <?php foreach ($room_types as $room_type) : ?>
             <option value="<?= $room_type['id'] ?>"><?= $room_type['room_type'] ?></option>
@@ -93,7 +116,7 @@ $conn->close();
 
       </div>
       <div class="form-group mb-3">
-        <label for="location">縣市</label>
+        <label class="py-2" for="location">縣市</label>
         <select class="form-select" id="location" name="location" aria-label="市">
           <?php foreach ($locations as $location) : ?>
             <option value="<?= $location['id'] ?>"><?= $location['location'] ?></option>
@@ -103,16 +126,17 @@ $conn->close();
 
       </div>
       <div class="form-group mb-3">
-        <label for="address">詳細地址</label>
+        <label class="py-2" for="address">詳細地址</label>
         <input type="text" class="form-control" id="address" name="address" required>
       </div>
 
       <div class="form-group mb-3">
-        <label for="phone">聯絡電話</label>
+        <label class="py-2" for="phone">聯絡電話</label>
         <input type="text" class="form-control" id="phone" name="phone" required>
       </div>
-
-      <button type="submit" class="btn btn-dark">確定</button>
+      <div class="form-group mb-3 d-flex justify-content-end">
+        <button type="submit" class="btn btn-dark">確定</button>
+      </div>
     </form>
   </div>
 
@@ -146,6 +170,5 @@ $conn->close();
     }
   }
 </script>
-
 
 </html>

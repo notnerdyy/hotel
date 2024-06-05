@@ -46,6 +46,7 @@ if (isset($_GET["page"])) {
   $hotelCount = $allHotelCount;
 }
 
+//出現搜尋結果時不顯示頁碼
 $isSearch = isset($_GET["search"]);
 
 if ($isSearch) {

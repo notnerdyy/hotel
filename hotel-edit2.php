@@ -55,6 +55,22 @@ $conn->close();
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= $row["name"] ?></title>
   <?php include("../css.php") ?>
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .table th {
+      white-space: nowrap;
+    }
+
+    .form-group {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+  </style>
 
 </head>
 
@@ -129,7 +145,9 @@ $conn->close();
           </td>
         </tr>
       </table>
-      <button class="btn btn-dark" type="submit">送出</button>
+      <div class="form-group  d-flex justify-content-end">
+        <button class="btn btn-dark" type="submit">送出</button>
+      </div>
     </form>
   </div>
   </div>
