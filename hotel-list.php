@@ -6,7 +6,6 @@ $resultAll = $conn->query($sqlAll);
 $allHotelCount = $resultAll->num_rows;
 
 
-
 // 每頁顯示筆數
 $perPage = 4;
 
@@ -42,14 +41,22 @@ $result = $conn->query($sql);
 $hotelCount = $result->num_rows;
 $rows = $result->fetch_all(MYSQLI_ASSOC);
 
+
 if (isset($_GET["page"])) {
   $hotelCount = $allHotelCount;
 }
 
 $isSearch = isset($_GET["search"]);
 
+if ($isSearch) {
+  $perPage = $hotelCount;
+}
+
 //分頁數
-$totalItems = 24;
+$sqlTotalItems = "SELECT COUNT(*) as total FROM hotel_list WHERE valid = 1";
+$resultTotalItems = $conn->query($sqlTotalItems);
+$rowTotalItems = $resultTotalItems->fetch_assoc();
+$totalItems = $rowTotalItems['total'];
 $itemsPerPage = 4;
 $totalPages = ceil($totalItems / $itemsPerPage);
 
@@ -57,13 +64,24 @@ $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
 $currentPage = max(1, min($totalPages, $currentPage));
 
-
-//房型篩選
-
+// 房型分類
 $sqlRoom = "SELECT * FROM room_category ORDER BY id ASC";
 $resultCate = $conn->query($sqlRoom);
 $cateRows = $resultCate->fetch_all(MYSQLI_ASSOC);
 
+if (isset($_GET["category"])) {
+  $category_id = $_GET["category"];
+  $sql = "SELECT hotel_list.*, room_category.room_type AS category_room_type
+          FROM hotel_list
+          JOIN room_category ON hotel_list.room_type_id = room_category.id
+          WHERE hotel_list.room_type_id = $category_id
+          ORDER BY hotel_list.id ASC";
+} else {
+  $sql = "SELECT hotel_list.*, room_category.room_type AS category_room_type
+          FROM hotel_list
+          JOIN room_category ON hotel_list.room_type_id = room_category.id
+          ORDER BY hotel_list.id ASC";
+}
 
 ?>
 
@@ -133,14 +151,24 @@ $cateRows = $resultCate->fetch_all(MYSQLI_ASSOC);
         <!-- 房型分類 -->
         <ul class="nav nav-pills">
           <li class="nav-item">
-            <a class="nav-link <?= !isset($_GET["room_type"]) ? 'active' : '' ?>" href="hotel-list.php?page=1">全部</a>
+            <a class="nav-link <?= !isset($_GET["category"]) ? 'active' : '' ?>" href="hotel-list.php?page=1">全部</a>
           </li>
-          <?php foreach ($cateRows as $roomCategory) : ?>
-            <li class="nav-item">
-              <a class="nav-link <?= (isset($_GET["room_type"]) && $_GET["room_type"] == $roomCategory["id"]) ? 'active' : '' ?>" href="hotel-list.php?room_type=<?= $roomCategory["id"] ?>"><?= $roomCategory["room_type"] ?></a>
-            </li>
-          <?php endforeach; ?>
+
+
+          <li class="nav-item">
+            <a class="nav-link" href="hotel-list.php?category=1<?= $category["id"] ?>&search=迷你犬"><?= $category["room_type"] ?>迷你犬</a>
+          </li>
+          <a class="nav-link" href="hotel-list.php?category=2<?= $category["id"] ?>&search=小型犬"><?= $category["room_type"] ?>小型犬</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="hotel-list.php?category=3<?= $category["id"] ?>&search=中型犬"><?= $category["room_type"] ?>中型犬</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="hotel-list.php?category=4<?= $category["id"] ?>&search=大型犬"><?= $category["room_type"] ?>大型犬</a>
+          </li>
+
         </ul>
+
 
 
         <!-- 新增 -->
