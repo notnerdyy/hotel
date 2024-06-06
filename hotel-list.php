@@ -195,10 +195,6 @@ $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
         共 <?= $hotelCount ?> 間
       </div>
 
-      <!-- id ASC DESC -->
-
-
-
 
       <div class="py-2 mb-3">
         <?php if ($hotelCount > 0) : ?>
