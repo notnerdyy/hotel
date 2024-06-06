@@ -6,61 +6,49 @@ $sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
 $resultAll = $conn->query($sqlAll);
 $allHotelCount = $resultAll->num_rows;
 
-
-
-
 // 如無資訊則抓第一頁
-$page = isset($_GET["page"]) ? $_GET["page"] : 1;
+$page = isset($_GET["page"]) ? (int)$_GET["page"] : 1;
 // 每頁顯示筆數
 $perPage = 4;
 $firstItem = ($page - 1) * $perPage;
 $pageCount = ceil($allHotelCount / $perPage);
 
-$order = isset($_GET['order']) ? $_GET['order'] : 1;
-
-if ($order == 1) {
-  $sql = "SELECT * FROM hotel_list WHERE valid=1 ORDER BY id ASC LIMIT $firstItem, $perPage";
-}
+$order = isset($_GET['order']) ? (int)$_GET['order'] : 1;
 
 switch ($order) {
-  case 1: //id ASC
+  case 1: // id ASC
     $orderClause = "ORDER BY id ASC";
     break;
-  case 2: //id DESC
+  case 2: // id DESC
     $orderClause = "ORDER BY id DESC";
     break;
   default: // 預設排序方式
     $orderClause = "ORDER BY id ASC";
     break;
 }
-$sql = "SELECT * FROM hotel_list WHERE valid = 1;
-$orderClause LIMIT $firstItem, $perPage";
 
-
-
-$sqlAll = "SELECT hotel_list.*, room_category.room_type, hotel_img.path 
-           FROM hotel_list 
-           JOIN room_category ON hotel_list.room_type_id = room_category.id 
-           LEFT JOIN (
-              SELECT hotel_img.hotel_id, MIN(hotel_img.path) as path
-              FROM hotel_img
-              WHERE hotel_img.valid = 1
-              GROUP BY hotel_img.hotel_id
-           ) as hotel_img ON hotel_list.id = hotel_img.hotel_id
-           WHERE hotel_list.valid = 1";
-
-
+$sql = "SELECT hotel_list.*, room_category.room_type, hotel_img.path 
+        FROM hotel_list 
+        JOIN room_category ON hotel_list.room_type_id = room_category.id 
+        LEFT JOIN (
+          SELECT hotel_img.hotel_id, MIN(hotel_img.path) as path
+          FROM hotel_img
+          WHERE hotel_img.valid = 1
+          GROUP BY hotel_img.hotel_id
+        ) as hotel_img ON hotel_list.id = hotel_img.hotel_id
+        WHERE hotel_list.valid = 1";
 
 // 搜尋欄
 if (isset($_GET["search"])) {
-  $search = $_GET["search"];
-  $sql = $sqlAll . " AND (hotel_list.name LIKE '%$search%' OR hotel_list.description LIKE '%$search%' OR room_category.room_type LIKE '%$search%' )";
+  $search = $conn->real_escape_string($_GET["search"]);
+  $sql .= " AND (hotel_list.name LIKE '%$search%' OR hotel_list.description LIKE '%$search%' OR room_category.room_type LIKE '%$search%' )";
+  // 如果有搜尋條件，不設定 LIMIT
+  $sql .= " $orderClause";
 } else {
-  $sql = $sqlAll;
+  // 如果沒有搜尋條件，設定 LIMIT
+  $sql .= " $orderClause LIMIT $firstItem, $perPage";
 }
 
-// 加入排序方式與分頁
-$sql .= " $orderClause LIMIT $firstItem, $perPage";
 $result = $conn->query($sql);
 $hotelCount = $result->num_rows;
 $rows = $result->fetch_all(MYSQLI_ASSOC);
@@ -69,14 +57,10 @@ if (isset($_GET["page"])) {
   $hotelCount = $allHotelCount;
 }
 
-//出現搜尋結果時不顯示頁碼
+// 出現搜尋結果時不顯示頁碼
 $isSearch = isset($_GET["search"]);
 
-if ($isSearch) {
-  $perPage = $hotelCount;
-}
-
-//分頁數
+// 分頁數
 $sqlTotalItems = "SELECT COUNT(*) as total FROM hotel_list WHERE valid = 1";
 $resultTotalItems = $conn->query($sqlTotalItems);
 $rowTotalItems = $resultTotalItems->fetch_assoc();
@@ -85,7 +69,6 @@ $itemsPerPage = 4;
 $totalPages = ceil($totalItems / $itemsPerPage);
 
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-
 $currentPage = max(1, min($totalPages, $currentPage));
 
 // 房型分類
@@ -94,7 +77,7 @@ $resultCate = $conn->query($sqlRoom);
 $cateRows = $resultCate->fetch_all(MYSQLI_ASSOC);
 
 if (isset($_GET["category"])) {
-  $category_id = $_GET["category"];
+  $category_id = (int)$_GET["category"];
   $sql = "SELECT hotel_list.*, room_category.room_type AS category_room_type
           FROM hotel_list
           JOIN room_category ON hotel_list.room_type_id = room_category.id
@@ -107,7 +90,6 @@ if (isset($_GET["category"])) {
           ORDER BY hotel_list.id ASC";
 }
 $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
-
 ?>
 
 
