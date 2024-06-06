@@ -1,17 +1,41 @@
 <?php
 require_once("../db_connect.php");
 
+
 $sqlAll = "SELECT * FROM hotel_list WHERE valid = 1";
 $resultAll = $conn->query($sqlAll);
 $allHotelCount = $resultAll->num_rows;
 
 
-// 每頁顯示筆數
-$perPage = 4;
+
 
 // 如無資訊則抓第一頁
 $page = isset($_GET["page"]) ? $_GET["page"] : 1;
+// 每頁顯示筆數
+$perPage = 4;
 $firstItem = ($page - 1) * $perPage;
+$pageCount = ceil($allHotelCount / $perPage);
+
+$order = isset($_GET['order']) ? $_GET['order'] : 1;
+
+if ($order == 1) {
+  $sql = "SELECT * FROM hotel_list WHERE valid=1 ORDER BY id ASC LIMIT $firstItem, $perPage";
+}
+
+switch ($order) {
+  case 1: //id ASC
+    $orderClause = "ORDER BY id ASC";
+    break;
+  case 2: //id DESC
+    $orderClause = "ORDER BY id DESC";
+    break;
+  default: // 預設排序方式
+    $orderClause = "ORDER BY id ASC";
+    break;
+}
+$sql = "SELECT * FROM hotel_list WHERE valid = 1;
+$orderClause LIMIT $firstItem, $perPage";
+
 
 
 $sqlAll = "SELECT hotel_list.*, room_category.room_type, hotel_img.path 
@@ -35,12 +59,11 @@ if (isset($_GET["search"])) {
   $sql = $sqlAll;
 }
 
-// 加入分頁
-$sql .= " LIMIT $firstItem, $perPage";
+// 加入排序方式與分頁
+$sql .= " $orderClause LIMIT $firstItem, $perPage";
 $result = $conn->query($sql);
 $hotelCount = $result->num_rows;
 $rows = $result->fetch_all(MYSQLI_ASSOC);
-
 
 if (isset($_GET["page"])) {
   $hotelCount = $allHotelCount;
@@ -181,22 +204,35 @@ $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
 
 
       <div class="pb-2">
+        <div class="d-flex justify-content-end">
+          <div class="btn-group">
+            <a href="?page=<?= $page ?>&order=1" class="btn btn-outline-primary <?php if ($order == 1) echo 'active'; ?>">ID 升序</a>
+            <a href="?page=<?= $page ?>&order=2" class="btn btn-outline-primary <?php if ($order == 2) echo 'active'; ?>">ID 降序</a>
+          </div>
+        </div>
         共 <?= $hotelCount ?> 間
-
       </div>
+
+      <!-- id ASC DESC -->
+
+
+
 
       <div class="py-2 mb-3">
         <?php if ($hotelCount > 0) : ?>
           <table class="table table-bordered">
             <thead>
               <tr class="text-nowrap">
-                <th>ID</th>
+                <th>
+                  ID
+                </th>
                 <th>旅館名稱</th>
                 <th>介紹</th>
                 <th>圖片</th>
                 <th>房間類型</th>
                 <th>詳細地址</th>
                 <th>聯絡電話</th>
+                <th>建立時間</th>
                 <th></th>
 
               </tr>
@@ -217,6 +253,7 @@ $category_id = isset($_GET["category"]) ? $_GET["category"] : '';
                   <td><?= $hotel_list["room_type"] ?></td>
                   <td><?= $hotel_list["address"] ?></td>
                   <td><?= $hotel_list["phone"] ?></td>
+                  <td><?= $hotel_list["created_at"] ?></td>
 
                   <td>
                     <a class="btn btn-primary" href="hotel-edit.php?id=<?= $hotel_list["id"] ?>" title="編輯狗狗旅館"><i class="fa-regular fa-pen-to-square"></i></a>
