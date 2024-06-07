@@ -63,6 +63,19 @@ $images = $resultImg->fetch_all(MYSQLI_ASSOC);
       <a class="btn btn-primary" href="hotel-list.php"><i class="fa-solid fa-arrow-left"></i> 回狗狗旅館列表</a>
     </div>
 
+    <!-- 顯示 alert -->
+    <?php if (isset($_GET['status']) && $_GET['status'] == 'success') : ?>
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        旅館資訊更新完成！
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php elseif (isset($_GET['status']) && $_GET['status'] == 'error') : ?>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        編輯失敗！
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    <?php endif; ?>
+
     <form action="doUpdateHotel.php" method="post">
       <table class="table table-bordered">
         <tr>

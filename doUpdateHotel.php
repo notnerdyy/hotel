@@ -26,11 +26,15 @@ $sql = "UPDATE hotel_list SET
         WHERE id=$id";
 
 
+
 if ($conn->query($sql) === TRUE) {
-  echo "更新成功";
+  header("Location: hotel-edit.php?id=$id&status=success");
+  exit();
 } else {
-  echo "更新資料錯誤: " . $conn->error;
+  header("Location: hotel-edit.php?id=$id&status=error");
+  exit();
 }
+?>
 
 header("location: hotel-edit.php?id=" . $id);
 $conn->close();
